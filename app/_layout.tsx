@@ -1,39 +1,64 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack } from "expo-router";
+import { tokenCache } from "@/cache";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import "@/global.css";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import Toast from "react-native-toast-message";
+import { Linking } from "react-native";
+import { handleURLCallback } from "@stripe/stripe-react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { fetchBalicKeyStrip } from "@/services/strip";
+
+const queryClient = new QueryClient();
+
+if (!publishableKey) {
+  throw new Error("Missing Publishable Key. Please set  in your .env");
+}
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [publishableKeyStrip, setPublishableKeyStrip] = useState("");
+
+  const fetchPublishableKey = async () => {
+    const key = await fetchBalicKeyStrip();
+    setPublishableKeyStrip(key.publicKey);
+  };
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    const handleDeepLink = async (url: string | null) => {
+      if (url) {
+        await handleURLCallback(url); // Stripe handles the redirect
+      }
+    };
 
-  if (!loaded) {
-    return null;
-  }
+    Linking.getInitialURL().then(handleDeepLink);
+    Linking.addEventListener("url", (event) => handleDeepLink(event.url));
+
+    return () => {
+      Linking.removeAllListeners("url");
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchPublishableKey();
+  }, []);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <>
+      <StripeProvider publishableKey={publishableKeyStrip} urlScheme="myapp">
+        <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+          <QueryClientProvider client={queryClient}>
+            <ClerkLoaded>
+              <Stack screenOptions={{ headerShown: false }} />
+            </ClerkLoaded>
+          </QueryClientProvider>
+        </ClerkProvider>
+      </StripeProvider>
+
+      <Toast />
+    </>
   );
 }

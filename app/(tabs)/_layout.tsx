@@ -1,45 +1,114 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import { View, StyleSheet } from "react-native";
+import {COLORS} from "@/Util/Colors";
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+export default function RootLayout() {
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+        return (
+            <Tabs
+                screenOptions={{
+                    headerShown: false,
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                        backgroundColor: "#ffffff",
+                        borderRadius: 100,
+                        marginHorizontal: 10,
+                        marginBottom: 10,
+                        height: 60,
+                    },
+                    tabBarItemStyle: {
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-around",
+                    },
+                }}
+            >
+                <Tabs.Screen
+                    name="index"
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View
+                                style={[
+                                    styles.iconContainer,
+                                    {
+                                        backgroundColor: focused ? COLORS.Primary : "",
+                                    },
+                                ]}
+                            >
+                                <MaterialCommunityIcons
+                                    name={focused ? "home" : "home-outline"}
+                                    size={27}
+                                    color={focused ? "white":"#111827"}
+                                />
+                            </View>
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="search"
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View
+                                style={[
+                                    styles.iconContainer,
+                                    {
+                                        backgroundColor: focused ? COLORS.Primary : "",
+                                    },
+                                ]}
+                            >
+                                <Ionicons name="search-outline" size={27}   color={focused ? "white":"#111827"} />
+                            </View>
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="shope"
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View
+                                style={[
+                                    styles.iconContainer,
+                                    {
+                                        backgroundColor: focused ? COLORS.Primary : "",
+                                    },
+                                ]}
+                            >
+                                <MaterialCommunityIcons name="shopping-outline" size={27}  color={focused ? "white":"#111827"} />
+                            </View>
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="profile"
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <View
+                                style={[
+                                    styles.iconContainer,
+                                    {
+                                        backgroundColor: focused ? COLORS.Primary : "",
+                                    },
+                                ]}
+                            >
+                                <MaterialCommunityIcons name="account-circle-outline" size={27}   color={focused ? "white":"#111827"} />
+                            </View>
+                        ),
+                    }}
+                />
+            </Tabs>
+        );
+    }
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
-}
+
+const styles = StyleSheet.create({
+    iconContainer: {
+        borderRadius: 25,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: 40,
+        height: 40,
+    },
+});

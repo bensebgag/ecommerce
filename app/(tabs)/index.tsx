@@ -1,74 +1,79 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, ScrollView, View, TouchableOpacity, Text } from "react-native";
+import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
+import { SearchBar } from "@/components/SearchBar";
+import BasicMap from "@/components/Map";
+import Category from "@/features/categories/Category";
+import Productions from "@/features/proudcts/Productions";
+import { router } from "expo-router";
+import { useLogout } from "@/hooks/useLogout";
+import ProductForm from "@/components/AnimatedForm";
+import { useUser } from "@/app/auth/useUser";
+import { useState } from "react";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function Index() {
+  const { logout } = useLogout();
+  const { data: User, isLoading } = useUser();
+  const [formOpen, setFormOpen] = useState(false);
 
-export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView className={"w-full h-full bg-gray-50"}>
+      <ScrollView scrollEnabled={!formOpen}>
+        <View className={"w-full h-full flex flex-col gap-4 p-4"}>
+          <View
+            className={"w-full  flex flex-row items-center justify-between"}
+          >
+            <Image
+              className={"w-14 h-14"}
+              source={require("@/assets/images/user.png")}
+            />
+            <View className={"flex flex-row gap-1"}>
+              <AntDesign
+                onPress={() => router.replace("/chart/")}
+                className={
+                  "border-[1px] bg-white p-2 border-gray-200 rounded-full "
+                }
+                name="shoppingcart"
+                size={24}
+                color="#52525B"
+              />
+              <TouchableOpacity
+                onPress={logout}
+                className="w-12 h-12 flex items-center justify-center bg-white rounded-full"
+              >
+                <SimpleLineIcons name="logout" size={18} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <SearchBar />
+
+          <Category />
+
+          <Productions />
+        </View>
+      </ScrollView>
+      {!isLoading && User && User.role === "ADMIN" && (
+        <ProductForm open={formOpen} setOpen={setFormOpen} />
+      )}
+      {!formOpen && !isLoading && User && User.role === "ADMIN" && (
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            bottom: 30,
+            right: 30,
+            backgroundColor: "#E2AF6C",
+            width: 56,
+            height: 56,
+            borderRadius: 28,
+            alignItems: "center",
+            justifyContent: "center",
+            elevation: 5,
+          }}
+          onPress={() => setFormOpen(true)}
+        >
+          <AntDesign name="plus" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
