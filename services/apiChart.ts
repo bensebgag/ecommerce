@@ -43,7 +43,6 @@ export const deleteProductFromChart = async (
   token: string | null
 ) => {
   try {
-    console.log("chart id ", chartId);
     const res = await api.delete(`deleteProductFromChart/${idProduct}`, {
       params: { chartId },
       headers: {
