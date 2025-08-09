@@ -12,6 +12,9 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { useRef, useState, useEffect } from "react";
 import { Product as ProductTypes } from "@/Util/type";
 import { useRemoveProductFromChart } from "@/features/chart/useRemoveProductFromChart";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { useSyncQuantity } from "@/features/chart/useSyncQuatinty";
 
 interface Props
   extends Omit<
@@ -25,6 +28,7 @@ interface Props
     | "description"
   > {
   initialQuantity?: number;
+  chartProductId: number;
   onQuantityChange?: (id: number, quantity: number) => void;
   onRemove?: (id: number) => void;
   id: number;
@@ -44,8 +48,10 @@ export function ProductItemChart({
   onRemove,
   setOrderAmount,
   setTotalAmount,
+  chartProductId,
 }: Props) {
   const [number, setNumber] = useState(initialQuantity);
+  const queryClient = useQueryClient();
 
   const [isSwiping, setIsSwiping] = useState(false);
   const { deleteProductFromChartMutaion, isLoading } =
@@ -57,21 +63,31 @@ export function ProductItemChart({
     }
   }, [initialQuantity]);
 
-  function handleClickBtn(type: string) {
+  const quantityMutation = useSyncQuantity(chartProductId);
+
+  async function handleClickBtn(type: string) {
+    let newQuantity: number;
+    let priceDifference: number;
+
     if (type === "minus" && number > 1) {
-      const newQuantity = number - 1;
-      setNumber(newQuantity);
-      setOrderAmount((pre) => pre - price);
-      setTotalAmount((pre) => pre - price);
-      onQuantityChange?.(id, newQuantity);
+      newQuantity = number - 1;
+      priceDifference = -price;
+    } else if (type === "plus") {
+      newQuantity = number + 1;
+      priceDifference = price;
+    } else {
+      return;
     }
-    if (type === "plus") {
-      const newQuantity = number + 1;
-      setNumber(newQuantity);
-      setOrderAmount((pre) => pre + price);
-      setTotalAmount((pre) => pre + price);
-      onQuantityChange?.(id, newQuantity);
-    }
+
+    setNumber(newQuantity);
+    setOrderAmount((prev) => prev + priceDifference);
+    setTotalAmount((prev) => prev + priceDifference);
+
+    quantityMutation.mutate({
+      chartProductId,
+      quantity: newQuantity,
+      opreationType: type,
+    });
   }
 
   const translateX = useRef(new Animated.Value(0)).current;
@@ -194,7 +210,7 @@ export function ProductItemChart({
           <View className="flex-col h-32 md:h-36 items-center justify-center gap-3 px-1 py-3 rounded-full border border-gray-300 bg-gray-100">
             <TouchableOpacity
               className="p-2 bg-gray-400 rounded-full"
-              onPress={() => handleClickBtn("minus")}
+              onPress={async () => await handleClickBtn("minus")}
               disabled={number <= 1}
               style={{ opacity: number <= 1 ? 0.5 : 1 }}
             >
@@ -203,7 +219,7 @@ export function ProductItemChart({
             <Text className="text-base text-gray-950 font-bold">{number}</Text>
             <TouchableOpacity
               className="p-2 bg-gray-800 rounded-full"
-              onPress={() => handleClickBtn("plus")}
+              onPress={async () => await handleClickBtn("plus")}
             >
               <AntDesign name="plus" size={13} color="white" />
             </TouchableOpacity>

@@ -66,9 +66,11 @@ export default function Index() {
           {data?.products?.map((item, index) => (
             <ProductItemChart
               key={item.productId}
+              chartProductId={item.id}
               id={item.product?.id}
               chartId={data?.id}
               name={item?.product?.name}
+              initialQuantity={item.quantity}
               price={item?.product?.price}
               typesChoose={item.product?.typesChoose}
               setOrderAmount={setOrderAmount}
