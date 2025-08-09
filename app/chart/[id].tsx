@@ -50,7 +50,6 @@ export default function ChartDetailPage() {
       router.replace(`/chart/`);
     },
     onError: (err) => {
-      console.log("err", err);
       Toast.show({
         type: "error",
         text1: error?.message || "Something went wrong",

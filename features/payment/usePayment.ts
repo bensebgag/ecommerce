@@ -33,7 +33,6 @@ export function usePyament(amount: number = 0, chartId: number) {
       });
 
       if (error) {
-        console.error("Failed to initialize payment sheet:", error);
         Toast.show({
           type: "error",
           text1: "Payment Setup Failed",
@@ -43,10 +42,6 @@ export function usePyament(amount: number = 0, chartId: number) {
         setReady(true);
       }
     } catch (error) {
-      console.error(
-        "Unexpected error during payment sheet initialization:",
-        error
-      );
       Toast.show({
         type: "error",
         text1: "Payment Setup Failed",

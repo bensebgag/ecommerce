@@ -54,3 +54,28 @@ export const deleteProductFromChart = async (
     throw err;
   }
 };
+
+export async function updateQuantityAPI(
+  chartProductId: number,
+  quantity: number,
+  opreationType: "plus" | "minus",
+  token: string | null
+) {
+  try {
+    const response = await api.post(
+      `syncQuantity/${chartProductId}`,
+      {
+        quantity,
+        opreationType,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
