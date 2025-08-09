@@ -27,7 +27,9 @@ export default function ChartDetailPage() {
   const { id } = useLocalSearchParams();
 
   const [number, setNumber] = useState(1);
-  const [selected, setSelected] = useState<ProductSize>();
+  const [selected, setSelected] = useState<ProductSize>(
+    data?.availableSizes[0]
+  );
   const [selectedImage, setSelectedImage] = useState(0);
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
@@ -38,7 +40,12 @@ export default function ChartDetailPage() {
   } = useMutation({
     mutationFn: async () => {
       const token = await getToken();
-      return addProductToChart(+id, token);
+      return addProductToChart(
+        +id,
+        token,
+        selected?.size,
+        data?.typesChoose[selectedImage]
+      );
     },
     onSuccess: () => {
       Toast.show({

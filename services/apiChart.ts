@@ -3,12 +3,17 @@ import { Chart } from "@/Util/type";
 
 export const addProductToChart = async (
   id: number,
-  token: string | null
+  token: string | null,
+  size: number,
+  image: string
 ): Promise<Chart> => {
   try {
     const res = await api.post(
       `addProductToChart/${id}`,
-      {},
+      {
+        size,
+        image,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
