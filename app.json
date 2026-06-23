@@ -12,9 +12,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/shoe_app_icon_matched.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ecommerce.app"
     },
     "web": {
       "bundler": "metro",
