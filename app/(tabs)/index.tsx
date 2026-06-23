@@ -1,18 +1,17 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, ScrollView, View, TouchableOpacity, Text } from "react-native";
-import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
+import { ScrollView, View, TouchableOpacity, Text } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 import { SearchBar } from "@/components/SearchBar";
-import BasicMap from "@/components/Map";
 import Category from "@/features/categories/Category";
 import Productions from "@/features/proudcts/Productions";
 import { router } from "expo-router";
-import { useLogout } from "@/hooks/useLogout";
 import ProductForm from "@/components/AnimatedForm";
-import { useUser } from "@/app/auth/useUser";
+import { useUser } from "@/features/auth/useUser";
 import { useState } from "react";
+import AvatarUser from "@/features/auth/AvatarUser";
+import Logout from "@/features/auth/Logout";
 
 export default function Index() {
-  const { logout } = useLogout();
   const { data: User, isLoading } = useUser();
   const [formOpen, setFormOpen] = useState(false);
 
@@ -23,10 +22,7 @@ export default function Index() {
           <View
             className={"w-full  flex flex-row items-center justify-between"}
           >
-            <Image
-              className={"w-14 h-14"}
-              source={require("@/assets/images/user.png")}
-            />
+            <AvatarUser />
             <View className={"flex flex-row gap-1"}>
               <AntDesign
                 onPress={() => router.replace("/chart/")}
@@ -37,12 +33,7 @@ export default function Index() {
                 size={24}
                 color="#52525B"
               />
-              <TouchableOpacity
-                onPress={logout}
-                className="w-12 h-12 flex items-center justify-center bg-white rounded-full"
-              >
-                <SimpleLineIcons name="logout" size={18} color="black" />
-              </TouchableOpacity>
+              <Logout />
             </View>
           </View>
           <SearchBar />

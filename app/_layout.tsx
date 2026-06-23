@@ -2,21 +2,32 @@ import { Stack } from "expo-router";
 import { tokenCache } from "@/cache";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import "@/global.css";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import Toast from "react-native-toast-message";
 import { Linking } from "react-native";
 import { handleURLCallback } from "@stripe/stripe-react-native";
-
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { fetchBalicKeyStrip } from "@/services/strip";
+import { setTokenProvider } from "@/services/clerkToken";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 const queryClient = new QueryClient();
 
 if (!publishableKey) {
-  throw new Error("Missing Publishable Key. Please set  in your .env");
+  throw new Error("Missing Publishable Key. Please set in your .env");
+}
+
+function RootLayoutContent() {
+  const { getToken, isLoaded } = useAuth();
+
+  useEffect(() => {
+    if (isLoaded && getToken) {
+      setTokenProvider(getToken);
+    }
+  }, [isLoaded, getToken]);
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
 
 export default function RootLayout() {
@@ -30,7 +41,7 @@ export default function RootLayout() {
   useEffect(() => {
     const handleDeepLink = async (url: string | null) => {
       if (url) {
-        await handleURLCallback(url); // Stripe handles the redirect
+        await handleURLCallback(url);
       }
     };
 
@@ -51,13 +62,10 @@ export default function RootLayout() {
       <StripeProvider publishableKey={publishableKeyStrip} urlScheme="myapp">
         <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
           <QueryClientProvider client={queryClient}>
-            <ClerkLoaded>
-              <Stack screenOptions={{ headerShown: false }} />
-            </ClerkLoaded>
+            <RootLayoutContent />
           </QueryClientProvider>
         </ClerkProvider>
       </StripeProvider>
-
       <Toast />
     </>
   );

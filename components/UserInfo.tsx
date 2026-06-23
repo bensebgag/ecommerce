@@ -1,17 +1,21 @@
-import {Image, Text, View} from "react-native";
+import AvatarUser from "@/features/auth/AvatarUser";
+import { Text, View } from "react-native";
 interface Props {
-    name: string;
-    image:any;
-    email:string;
+  name: string;
+  email: string;
 }
 
-export  default  function UserInfo({name,email,image}: Props ): JSX.Element {
+export default function UserInfo({ name, email }: Props): JSX.Element {
   return (
-      <View className={"flex flex-col gap-1 "}>
-          <Image className={"self-center w-24 h-24"} source={image} />
-          <Text className={"text-lg font-medium text-gray-800 text-center"}>{name}</Text>
-          <Text className={"text-sm font-medium text-center text-gray-500"}> {email}</Text>
-      </View>
-  )
-
+    <View className={"flex flex-col items-center  gap-1 "}>
+      <AvatarUser height={24} width={24} />
+      <Text className={"text-lg font-medium text-gray-800 text-center"}>
+        {name}
+      </Text>
+      <Text className={"text-sm font-medium text-center text-gray-500"}>
+        {" "}
+        {email}
+      </Text>
+    </View>
+  );
 }

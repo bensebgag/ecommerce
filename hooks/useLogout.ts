@@ -16,7 +16,7 @@ export const useLogout = () => {
         text1: "Logged out successfully",
         visibilityTime: 2000,
       });
-      router.replace("/auth/Login");
+      router.replace("/(auth)/login");
       return true;
     } catch (error) {
       Toast.show({

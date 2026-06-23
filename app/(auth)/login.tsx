@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, View } from "react-native";
 import InputField from "@/components/InputField";
 import OAuth from "@/components/OAuth";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,6 +13,7 @@ interface FormState {
   email: string;
   password: string;
 }
+
 export default function Login() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const [formState, setFormState] = useState<FormState>({
@@ -24,17 +25,17 @@ export default function Login() {
 
   const handleInputChange = <T extends keyof FormState>(
     field: T,
-    value: FormState[T]
+    value: FormState[T],
   ) => {
     setFormState((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
+
   const onSignInPress = useCallback(async () => {
     if (!isLoaded) return;
 
-    // Validate email
     if (!isValidEmail(formState.email)) {
       Toast.show({
         type: "error",
@@ -44,7 +45,6 @@ export default function Login() {
       return;
     }
 
-    // Validate password is not empty
     if (!formState.password.trim()) {
       Toast.show({
         type: "error",
@@ -56,15 +56,12 @@ export default function Login() {
 
     setLoading(true);
 
-    // Start the sign-in process using the email and password provided
     try {
       const signInAttempt = await signIn.create({
         identifier: formState.email.trim(),
         password: formState.password,
       });
 
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         Toast.show({
@@ -94,18 +91,18 @@ export default function Login() {
   }, [isLoaded, formState.email, formState.password]);
 
   return (
-    <SafeAreaView className="w-full h-full p-4 bg-white  ">
+    <SafeAreaView className="w-full h-full p-4 bg-white">
       <ScrollView>
-        <View className={"flex flex-col gap-4"}>
+        <View className="flex flex-col gap-4">
           <Image
-            className={"w-80 h-80 self-center"}
+            className="w-80 h-80 self-center"
             source={require("@/assets/images/10645318.jpg")}
           />
-          <View className="flex flex-col  gap-4 w-full">
+          <View className="flex flex-col gap-4 w-full">
             <InputField
-              onChangeText={(text: string) => handleInputChange("email", text)}
+              onChangeText={(text) => handleInputChange("email", text)}
               value={formState.email}
-              placeholder={"Email"}
+              placeholder="Email"
               icon={
                 <MaterialCommunityIcons
                   name="email-outline"
@@ -114,16 +111,14 @@ export default function Login() {
                   className="absolute left-4 top-11"
                 />
               }
-              type={"text"}
-              label={"Email"}
+              type="text"
+              label="Email"
             />
 
             <InputField
-              onChangeText={(text: string) =>
-                handleInputChange("password", text)
-              }
+              onChangeText={(text) => handleInputChange("password", text)}
               value={formState.password}
-              placeholder={"Enter password"}
+              placeholder="Enter password"
               icon={
                 <AntDesign
                   name="lock"
@@ -132,11 +127,15 @@ export default function Login() {
                   className="absolute left-4 top-11"
                 />
               }
-              type={"password"}
-              label={"Enter password"}
+              type="password"
+              label="Enter password"
             />
           </View>
-          <OAuth onPressSignUp={onSignInPress} complete={loading} />
+          <OAuth
+            onPressSignUp={onSignInPress}
+            complete={loading}
+            isLogin={false}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

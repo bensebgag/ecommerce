@@ -9,10 +9,10 @@ import {
 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import VerificationModal from "@/components/VerificationModal";
-import { useSignUp } from "@clerk/clerk-expo";
 import Button from "@/components/Button";
 import Toast from "react-native-toast-message";
 import { isMatchPassword, isValidEmail, isValidPassword } from "@/helpers";
+import { useSignUp } from "@clerk/clerk-expo";
 
 interface FormState {
   name: string;
@@ -23,10 +23,10 @@ interface FormState {
 }
 
 export default function SignUp() {
-  const { isLoaded, signUp, setActive } = useSignUp();
-  const [complelte, setcomplete] = useState(false);
+  const { signUp, setActive, isLoaded } = useSignUp();
+  const [complete, setComplete] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [hasPermesstion, sethasPermesstion] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
   const [formState, setFormState] = useState<FormState>({
     name: "",
     email: "",
@@ -34,15 +34,17 @@ export default function SignUp() {
     code: "",
     password_confirmation: "",
   });
+
   const handleInputChange = <T extends keyof FormState>(
     field: T,
-    value: FormState[T]
+    value: FormState[T],
   ) => {
     setFormState((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
+
   const onSignUpPress = async () => {
     if (!isLoaded) return;
     if (!isValidEmail(formState.email)) {
@@ -75,7 +77,6 @@ export default function SignUp() {
         password: formState.password,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
       setPendingVerification(true);
     } catch (e: any) {
       if (e?.errors?.some((err: any) => err.code === "form_password_pwned")) {
@@ -93,7 +94,7 @@ export default function SignUp() {
         });
       }
     }
-    setcomplete(false);
+    setComplete(false);
   };
 
   const onVerifyPress = async () => {
@@ -104,7 +105,7 @@ export default function SignUp() {
       });
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        sethasPermesstion(true);
+        setHasPermission(true);
       }
     } catch (err) {
       Toast.show({
@@ -116,20 +117,18 @@ export default function SignUp() {
   };
 
   return (
-    <SafeAreaView className={"flex flex-col gap-4 p-4 w-full h-full bg-white "}>
+    <SafeAreaView className="flex flex-col gap-4 p-4 w-full h-full bg-white">
       <ScrollView>
-        <View className={"w-full flex flex-col gap-4"}>
+        <View className="w-full flex flex-col gap-4">
           <Image
-            className={"w-60 h-60 self-center"}
+            className="w-60 h-60 self-center"
             source={require("@/assets/images/10645318.jpg")}
           />
-          <View className={"flex flex-col   gap-4"}>
+          <View className="flex flex-col gap-4">
             <InputField
-              onChangeText={(text) => {
-                handleInputChange("name", text);
-              }}
+              onChangeText={(text) => handleInputChange("name", text)}
               value={formState.name}
-              placeholder={"Enter name"}
+              placeholder="Enter name"
               icon={
                 <FontAwesome6
                   name="user"
@@ -138,15 +137,13 @@ export default function SignUp() {
                   className="absolute left-4 top-11"
                 />
               }
-              type={"text"}
-              label={"Name"}
+              type="text"
+              label="Name"
             />
             <InputField
-              onChangeText={(text) => {
-                handleInputChange("email", text);
-              }}
+              onChangeText={(text) => handleInputChange("email", text)}
               value={formState.email}
-              placeholder={"Email"}
+              placeholder="Email"
               icon={
                 <MaterialCommunityIcons
                   name="email-outline"
@@ -155,16 +152,13 @@ export default function SignUp() {
                   className="absolute left-4 top-11"
                 />
               }
-              type={"text"}
-              label={"Email"}
+              type="text"
+              label="Email"
             />
-
             <InputField
-              onChangeText={(text) => {
-                handleInputChange("password", text);
-              }}
+              onChangeText={(text) => handleInputChange("password", text)}
               value={formState.password}
-              placeholder={"Enter password"}
+              placeholder="Enter password"
               icon={
                 <AntDesign
                   name="lock"
@@ -173,15 +167,15 @@ export default function SignUp() {
                   className="absolute left-4 top-11"
                 />
               }
-              type={"password"}
-              label={"Password"}
+              type="password"
+              label="Password"
             />
             <InputField
-              onChangeText={(text) => {
-                handleInputChange("password_confirmation", text);
-              }}
+              onChangeText={(text) =>
+                handleInputChange("password_confirmation", text)
+              }
               value={formState.password_confirmation}
-              placeholder={"password confirm"}
+              placeholder="Password confirm"
               icon={
                 <AntDesign
                   name="lock"
@@ -190,25 +184,28 @@ export default function SignUp() {
                   className="absolute left-4 top-11"
                 />
               }
-              type={"password"}
-              label={"Password confirm"}
+              type="password"
+              label="Password confirm"
             />
           </View>
           {!pendingVerification && (
-            <OAuth complete={complelte} onPressSignUp={onSignUpPress} />
+            <OAuth
+              complete={complete}
+              onPressSignUp={onSignUpPress}
+              isLogin={true}
+            />
           )}
-
           {pendingVerification && (
-            <View className={"flex-col gap-2"}>
+            <View className="flex-col gap-2">
               <InputField
-                placeholder={"Enter your verification code"}
-                type={"text"}
+                placeholder="Enter your verification code"
+                type="text"
                 value={formState.code}
-                label={"Verify your email"}
+                label="Verify your email"
                 onChangeText={(text) => handleInputChange("code", text)}
               />
-              <Button title={"verify code"} onPress={onVerifyPress} />
-              {hasPermesstion && <VerificationModal />}
+              <Button title="Verify Code" onPress={onVerifyPress} />
+              {hasPermission && <VerificationModal />}
             </View>
           )}
         </View>

@@ -16,7 +16,6 @@ import { useProduct } from "@/features/proudcts/useProduct";
 import { ProductSize } from "@/Util/type";
 import Spinner from "@/components/Spinner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/clerk-expo";
 import { addProductToChart } from "@/services/apiChart";
 import Toast from "react-native-toast-message";
 
@@ -28,10 +27,9 @@ export default function ChartDetailPage() {
 
   const [number, setNumber] = useState(1);
   const [selected, setSelected] = useState<ProductSize>(
-    data?.availableSizes[0]
+    data?.availableSizes[0],
   );
   const [selectedImage, setSelectedImage] = useState(0);
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const {
     mutate,
@@ -39,12 +37,10 @@ export default function ChartDetailPage() {
     isLoading: isAddingProductToChart,
   } = useMutation({
     mutationFn: async () => {
-      const token = await getToken();
       return addProductToChart(
         +id,
-        token,
         selected?.size,
-        data?.typesChoose[selectedImage]
+        data?.typesChoose[selectedImage],
       );
     },
     onSuccess: () => {
@@ -56,10 +52,13 @@ export default function ChartDetailPage() {
 
       router.replace(`/chart/`);
     },
-    onError: (err) => {
+    onError: (err: any) => {
+      const errorMessage =
+        err?.response?.data?.message || err?.message || "Something went wrong";
+
       Toast.show({
         type: "error",
-        text1: error?.message || "Something went wrong",
+        text1: errorMessage,
       });
     },
   });
