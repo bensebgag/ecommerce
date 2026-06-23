@@ -12,17 +12,18 @@ import { ChartChekoutDetail } from "./chatChekout";
 
 export default function Index() {
   const navigation = useNavigation();
-  const { data, isLoading, isError, error } = useChart();
-  const [orderAmount, setOrderAmount] = useState<number>();
-  const [totalAmount, setTotalAmount] = useState<number>();
+  const { data: chart, isLoading, isError, error } = useChart();
+  const [orderAmount, setOrderAmount] = useState<number>(chart?.orderAmount);
+  const [totalAmount, setTotalAmount] = useState<number>(chart?.totalPayment);
 
   useEffect(() => {
-    if (data) {
-      setOrderAmount(data.orderAmount);
-      setTotalAmount(data.totalPayment);
+    if (chart) {
+      setOrderAmount(chart.orderAmount);
+      setTotalAmount(chart.totalPayment);
     }
-  }, [data]);
-  const { didTapCheckoutButton } = usePyament(totalAmount || 0, data?.id);
+  }, [chart]);
+
+  const { didTapCheckoutButton } = usePyament(totalAmount, chart?.id);
 
   function handelGoBack() {
     if (navigation.canGoBack()) router.back();
@@ -63,12 +64,12 @@ export default function Index() {
       </View>
       <ScrollView>
         <View className={"flex flex-col gap-4 "}>
-          {data?.products?.map((item, index) => (
+          {chart?.products?.map((item, index) => (
             <ProductItemChart
               key={item.productId}
               chartProductId={item.id}
               id={item.product?.id}
-              chartId={data?.id}
+              chartId={chart?.id}
               name={item?.product?.name}
               initialQuantity={item.quantity}
               price={item?.product?.price}
@@ -80,14 +81,17 @@ export default function Index() {
         </View>
       </ScrollView>
 
-      {data?.products && data.products.length > 0 ? (
+      {chart?.products && chart.products.length > 0 ? (
         <>
           <ChartChekoutDetail
             orderAmount={orderAmount || 0}
             totalAmount={totalAmount || 0}
-            discount={data.discount}
+            discount={chart.discount}
           />
-          <Button title={"checkout"} onPress={didTapCheckoutButton} />
+          <Button
+            title={"checkout"}
+            onPress={didTapCheckoutButton ? didTapCheckoutButton : undefined}
+          />
         </>
       ) : (
         <View className="flex flex-row items-center justify-between">

@@ -39,3 +39,5 @@ export const ChartChekoutDetail = ({
     </View>
   );
 };
+
+export default ChartChekoutDetail;

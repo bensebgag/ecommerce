@@ -11,10 +11,33 @@ export function usePyament(amount: number = 0, chartId: number) {
   const [ready, setReady] = useState(false);
   const router = useRouter();
 
+  const confirmHandler = async (
+    paymentMethod: string | undefined,
+    shouldSavePaymentMethod: boolean,
+    intentCreationCallback: (params: {
+      clientSecret?: string;
+      error?: string;
+    }) => void,
+  ) => {
+    try {
+      const amountInCents = Math.round(amount * 100);
+      const res = await createIntent(amountInCents);
+      const clientSecret = res.data.clientSecret;
+      if (clientSecret) {
+        intentCreationCallback({ clientSecret });
+      } else {
+        intentCreationCallback({ error: "Failed to create payment intent" });
+      }
+    } catch (error) {
+      intentCreationCallback({
+        error: "An unexpected error occurred while processing payment",
+      });
+    }
+  };
+
   const initializePaymentSheet = async () => {
     try {
-      if (!amount || amount <= 0) {
-        console.warn("Invalid amount for payment:", amount);
+      if (!amount) {
         return;
       }
 
@@ -38,6 +61,7 @@ export function usePyament(amount: number = 0, chartId: number) {
           text1: "Payment Setup Failed",
           text2: error.message,
         });
+        setReady(false);
       } else {
         setReady(true);
       }
@@ -47,16 +71,22 @@ export function usePyament(amount: number = 0, chartId: number) {
         text1: "Payment Setup Failed",
         text2: "Unable to initialize payment",
       });
+      setReady(false);
     }
   };
 
   const didTapCheckoutButton = async () => {
+    if (!ready) {
+      Toast.show({ type: "info", text1: "Payment sheet is loading…" });
+      return;
+    }
+
     try {
       const { error } = await presentPaymentSheet();
 
       if (error) {
         if (error.code === PaymentSheetError.Canceled) {
-          Toast.show({ type: "info", text1: "canceled the payment" });
+          Toast.show({ type: "info", text1: "Canceled the payment" });
         } else {
           Toast.show({ type: "error", text1: "Payment failed" });
         }
@@ -75,32 +105,9 @@ export function usePyament(amount: number = 0, chartId: number) {
     }
   };
 
-  const confirmHandler = async (
-    paymentMethod: string | undefined,
-    shouldSavePaymentMethod: boolean,
-    intentCreationCallback: (params: {
-      clientSecret?: string;
-      error?: string;
-    }) => void
-  ) => {
-    try {
-      const res = await createIntent(1099);
-      const clientSecret = res.data.clientSecret;
-      if (clientSecret) {
-        intentCreationCallback({ clientSecret });
-      } else {
-        intentCreationCallback({ error: "Failed to create payment intent" });
-      }
-    } catch (error) {
-      intentCreationCallback({
-        error: "An unexpected error occurred while processing payment",
-      });
-    }
-  };
-
   useEffect(() => {
     initializePaymentSheet();
-  }, []);
+  }, [amount, chartId]);
 
   return { didTapCheckoutButton };
 }
