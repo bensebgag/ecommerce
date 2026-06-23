@@ -1,11 +1,9 @@
 import { updateQuantityAPI } from "@/services/apiChart";
 import { Chart } from "@/Util/type";
-import { useAuth } from "@clerk/clerk-expo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 
 export const useSyncQuantity = (chartProductId: number) => {
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -17,8 +15,7 @@ export const useSyncQuantity = (chartProductId: number) => {
       quantity: number;
       opreationType: "plus" | "minus";
     }) => {
-      const token = await getToken();
-      return updateQuantityAPI(chartProductId, quantity, opreationType, token);
+      return updateQuantityAPI(chartProductId, quantity, opreationType);
     },
 
     onMutate: async ({ quantity }: { quantity: number }) => {
@@ -27,7 +24,7 @@ export const useSyncQuantity = (chartProductId: number) => {
       const previousChart = queryClient.getQueryData<Chart>(["chart"]);
 
       const updatedProducts = previousChart?.products?.map((item) =>
-        item.productId === chartProductId ? { ...item, quantity } : item
+        item.productId === chartProductId ? { ...item, quantity } : item,
       );
 
       queryClient.setQueryData(["chart"], {

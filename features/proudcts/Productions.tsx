@@ -2,7 +2,7 @@ import { Text, View, ScrollView } from "react-native";
 import DisplayInRows from "@/components/DisplayInRows";
 import { useProducts } from "@/features/proudcts/useProducts";
 import Spinner from "@/components/Spinner";
-import { useUser } from "@/app/auth/useUser";
+import { useUser } from "@/features/auth/useUser";
 
 export default function Productions() {
   const { isLoading, data: products = [], isError, error } = useProducts();
@@ -26,7 +26,7 @@ export default function Productions() {
         key={i}
         product1={products[i]}
         product2={i + 1 < products.length ? products[i + 1] : undefined}
-      />
+      />,
     );
   }
 

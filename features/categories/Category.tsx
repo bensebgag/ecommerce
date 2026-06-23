@@ -11,7 +11,6 @@ import { useGategories } from "@/features/categories/useGategories";
 import { Category } from "@/Util/type";
 import Spinner from "@/components/Spinner";
 import { useNavigation } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
 
 const byDufalte = {
   id: null,

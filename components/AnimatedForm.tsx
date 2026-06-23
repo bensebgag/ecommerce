@@ -22,7 +22,6 @@ import AvailabeSizes from "@/features/sizesShoes/availabeSizes";
 import { createNewProduct } from "@/Util/type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createProduct } from "@/services/apiProducts";
-import { useAuth } from "@clerk/clerk-expo";
 import Toast from "react-native-toast-message";
 import Spinner from "@/components/Spinner";
 
@@ -41,7 +40,6 @@ const ProductForm = ({ setOpen, open }) => {
   const [newProduct, setNewProduct] =
     React.useState<createNewProduct>(defualtNewProduct);
 
-  const { getToken } = useAuth();
   const queryClient = useQueryClient();
   const {
     mutate: createNewProductMutation,
@@ -49,8 +47,7 @@ const ProductForm = ({ setOpen, open }) => {
     isPending,
   } = useMutation({
     mutationFn: async (product: FormData) => {
-      const token = await getToken();
-      return createProduct(token, product);
+      return createProduct(product);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -106,7 +103,7 @@ const ProductForm = ({ setOpen, open }) => {
       data.append("quantity", newProduct.quantity);
       data.append("categoryName", newProduct.categoryName);
       newProduct.sizeValues.forEach((size) =>
-        data.append("sizeValues", String(parseInt(size, 10)))
+        data.append("sizeValues", String(parseInt(size, 10))),
       );
 
       // append images
