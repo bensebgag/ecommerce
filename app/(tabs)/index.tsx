@@ -22,7 +22,7 @@ export default function Index() {
           <View
             className={"w-full  flex flex-row items-center justify-between"}
           >
-            <AvatarUser />
+            <AvatarUser width={50} height={50} />
             <View className={"flex flex-row gap-1"}>
               <AntDesign
                 onPress={() => router.replace("/chart/")}
