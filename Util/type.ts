@@ -6,14 +6,20 @@ export enum Role {
 export interface User {
   Clerkid: string;
   role: Role;
-  name: string;
+  FirstName: string;
+LastName: string;
+  email: string;
+  imageUrl: string;
+  phoneNumber: string;
   reviews?: Review[];
   bills?: Bill[];
   charts?: Chart[];
 }
 
-export interface UserCreateInput
-  extends Omit<User, "reviews" | "bills" | "charts"> {}
+export interface UserCreateInput extends Omit<
+  User,
+  "reviews" | "bills" | "charts"
+> {}
 export interface UserUpdateInput extends Partial<UserCreateInput> {}
 
 export interface Product {
@@ -31,8 +37,10 @@ export interface Product {
   chartItems?: ChartProduct[];
 }
 
-export interface ProductCreateInput
-  extends Omit<Product, "id" | "reviews" | "availableSizes" | "chartItems"> {
+export interface ProductCreateInput extends Omit<
+  Product,
+  "id" | "reviews" | "availableSizes" | "chartItems"
+> {
   availableSizes?: ProductSizeCreateInput[];
 }
 export interface createNewProduct {
@@ -56,10 +64,11 @@ export interface ProductSize {
   price?: number;
 }
 
-export interface ProductSizeCreateInput
-  extends Omit<ProductSize, "id" | "product"> {}
-export interface ProductSizeUpdateInput
-  extends Partial<ProductSizeCreateInput> {}
+export interface ProductSizeCreateInput extends Omit<
+  ProductSize,
+  "id" | "product"
+> {}
+export interface ProductSizeUpdateInput extends Partial<ProductSizeCreateInput> {}
 
 export interface Review {
   id: number;
@@ -70,8 +79,10 @@ export interface Review {
   product?: Product;
 }
 
-export interface ReviewCreateInput
-  extends Omit<Review, "id" | "user" | "product"> {}
+export interface ReviewCreateInput extends Omit<
+  Review,
+  "id" | "user" | "product"
+> {}
 export interface ReviewUpdateInput extends Partial<ReviewCreateInput> {}
 
 export interface Bill {
@@ -96,8 +107,10 @@ export interface Chart {
   products?: ChartProduct[];
 }
 
-export interface ChartCreateInput
-  extends Omit<Chart, "id" | "userowner" | "bill" | "products"> {
+export interface ChartCreateInput extends Omit<
+  Chart,
+  "id" | "userowner" | "bill" | "products"
+> {
   products?: ChartProductCreateInput[];
 }
 export interface ChartUpdateInput extends Partial<ChartCreateInput> {}
@@ -111,10 +124,11 @@ export interface ChartProduct {
   quantity: number;
 }
 
-export interface ChartProductCreateInput
-  extends Omit<ChartProduct, "id" | "chart" | "product"> {}
-export interface ChartProductUpdateInput
-  extends Partial<ChartProductCreateInput> {}
+export interface ChartProductCreateInput extends Omit<
+  ChartProduct,
+  "id" | "chart" | "product"
+> {}
+export interface ChartProductUpdateInput extends Partial<ChartProductCreateInput> {}
 
 export interface Category {
   id: number | null;
@@ -122,8 +136,10 @@ export interface Category {
   products?: Product[];
 }
 
-export interface CategoryCreateInput
-  extends Omit<Category, "id" | "products"> {}
+export interface CategoryCreateInput extends Omit<
+  Category,
+  "id" | "products"
+> {}
 export interface CategoryUpdateInput extends Partial<CategoryCreateInput> {}
 
 export interface BillDetail {
