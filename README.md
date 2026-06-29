@@ -194,11 +194,9 @@ Then:
 
 <div align="center">
 
-|                                                                     |                                                                     |                                                                     |
-| :-----------------------------------------------------------------: | :-----------------------------------------------------------------: | :-----------------------------------------------------------------: |
-| <img src="screenshots/Screenshot_20260627-102037.png" width="200"/> | <img src="screenshots/Screenshot_20260627-102052.png" width="200"/> | <img src="screenshots/Screenshot_20260627-102059.png" width="200"/> |
-| <img src="screenshots/Screenshot_20260627-102119.png" width="200"/> | <img src="screenshots/Screenshot_20260627-102133.png" width="200"/> | <img src="screenshots/Screenshot_20260627-102203.png" width="200"/> |
-| <img src="screenshots/Screenshot_20260627-102220.png" width="200"/> | <img src="screenshots/Screenshot_20260627-102227.png" width="200"/> |                                                                     |
+|                                                  |     |     |
+| :----------------------------------------------: | :-: | :-: |
+| <img src="screenshots/shoe_app_portfolio.png" /> |     |
 
 </div>
 
